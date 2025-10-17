@@ -76,3 +76,7 @@ def build_model(data: pd.DataFrame) -> dict[str, float]:
     # --- Return results
     print("RMSLE:", rmsle)
     return {'rmsle': rmsle}
+
+
+def test():
+    pass
