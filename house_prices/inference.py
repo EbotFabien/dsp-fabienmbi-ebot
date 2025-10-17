@@ -54,5 +54,5 @@ def make_predictions(inference_df: pd.DataFrame) -> pd.Series:
 
     # --- Predict using loaded model
     predictions = linear_regression_model_loaded.predict(X_infer_final_df.values)
-
+    #add fixes
     return predictions
