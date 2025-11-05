@@ -10,19 +10,33 @@ cont_features = ['GrLivArea', 'YearBuilt']
 cat_nom_features = ['Neighborhood']
 cat_ord_features = ['KitchenQual']
 
-# Load transformers and model
-standard_scaler_load = joblib.load(
-    '/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/standard_scaler.joblib'
+# Connect to MLflow
+mlflow.set_tracking_uri("file:./mlruns")  # same as in train.py
+experiment_name = "house_price_regression"
+experiment = mlflow.get_experiment_by_name(experiment_name)
+
+# Fetch all runs and pick the best (lowest RMSLE)
+runs_df = mlflow.search_runs(
+    experiment_ids=[experiment.experiment_id],
+    order_by=["metrics.rmsle ASC"]
 )
-one_hot_encoder_load = joblib.load(
-    '/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/one_hot_encoder.joblib'
-)
-ordinal_encoder_load = joblib.load(
-    '/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/ordinal_encoder.joblib'
-)
-linear_regression_model_loaded = joblib.load(
-    '/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/linear_regression_model.joblib'
-)
+best_run_id = runs_df.iloc[0].run_id
+print(f"Using best run: {best_run_id}")
+
+# Load model from MLflow
+linear_regression_model_loaded = mlflow.sklearn.load_model(f"runs:/{best_run_id}/model")
+
+# Load transformers from MLflow artifacts
+def load_transformer(run_id: str, artifact_name: str):
+    local_path = mlflow.artifacts.download_artifacts(run_id=run_id, artifact_path=artifact_name)
+    return joblib.load(local_path)
+
+standard_scaler_load = load_transformer(best_run_id, "standard_scaler.joblib")
+one_hot_encoder_load = load_transformer(best_run_id, "one_hot_encoder.joblib")
+ordinal_encoder_load = load_transformer(best_run_id, "ordinal_encoder.joblib")
+
+
+
 
 def make_predictions(inference_df: pd.DataFrame) -> pd.Series:
     """
