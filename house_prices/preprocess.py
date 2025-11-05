@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
-
+import mlflow
 
 
 
@@ -74,7 +74,7 @@ def scale_continuous_features(X_train, X_test, cont_features):
     X_train_scaled = scaler.transform(X_train[cont_features])
     X_test_scaled  = scaler.transform(X_test[cont_features])
     joblib.dump(scaler, "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/standard_scaler.joblib", compress=3) #why compress 3
-
+    mlflow.log_artifact("/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/standard_scaler.joblib")  # log to MLflow
 
     return X_train_scaled, X_test_scaled, scaler
 
@@ -114,7 +114,7 @@ def encode_nominal_features(X_train, X_test, cat_nom_features):
     # Get new column names
     ohe_cols = list(encoder.get_feature_names_out(cat_nom_features))
     joblib.dump(encoder, "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/one_hot_encoder.joblib", compress=3)
-
+    mlflow.log_artifact("/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/one_hot_encoder.joblib")
     return X_train_encoded, X_test_encoded, encoder, ohe_cols
 
 def encode_ordinal_features(X_train, X_test, cat_ord_features, ord_categories=None):
@@ -154,7 +154,7 @@ def encode_ordinal_features(X_train, X_test, cat_ord_features, ord_categories=No
     X_train_encoded = encoder.transform(X_train[cat_ord_features])
     X_test_encoded  = encoder.transform(X_test[cat_ord_features])
     joblib.dump(encoder, "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/ordinal_encoder.joblib", compress=3)
-
+    mlflow.log_artifact("/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/ordinal_encoder.joblib")
 
     return X_train_encoded, X_test_encoded, encoder
 

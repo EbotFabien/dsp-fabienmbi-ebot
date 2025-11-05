@@ -2,6 +2,8 @@ import pandas as pd
 import joblib
 from house_prices.preprocess import create_processed_dfs  
 # reuse function from preprocess.py
+import mlflow.sklearn
+import mlflow
 
 # Hard-coded feature lists
 cont_features = ['GrLivArea', 'YearBuilt']
