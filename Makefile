@@ -1,6 +1,6 @@
 # === CONFIGURATION ===
 PYTHON := python3
-PROJECT_NAME := house_prices
+PROJECT_NAME := dsp-fabienmbi-ebot
 MLFLOW_DIR := mlruns
 
 # === SETUP ===
