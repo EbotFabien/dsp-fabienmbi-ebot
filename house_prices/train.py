@@ -19,7 +19,7 @@ def compute_rmsle(y_test: np.ndarray, y_pred: np.ndarray, precision: int = 2) ->
     rmsle = np.sqrt(mean_squared_log_error(y_test, y_pred))
     return round(rmsle, precision)
 
-def build_model(data: pd.DataFrame) -> dict[str, float]:
+def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
     """
     Full data preprocessing + model training + evaluation pipeline.
 
@@ -40,7 +40,8 @@ def build_model(data: pd.DataFrame) -> dict[str, float]:
     ord_categories = [['Po', 'Fa', 'TA', 'Gd', 'Ex']]
 
     mlflow.set_tracking_uri("file:./mlruns")  # stores logs in ./mlruns folder
-    mlflow.set_experiment("house_price_regression")
+    experiment_name = "house_price_regression" if env == "production" else "house_price_regression_test"
+    mlflow.set_experiment(experiment_name)
     with mlflow.start_run():
         # --- Split data
         X_train, X_test, y_train, y_test = split_data(
