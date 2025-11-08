@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/a8b46b81f75f4d43aa56a1fedff39e0c/artifacts
+end_time: 1762591313795
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: a8b46b81f75f4d43aa56a1fedff39e0c
+run_name: funny-shoat-662
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762591313781
+status: 4
+tags: []
+user_id: ebotfabien

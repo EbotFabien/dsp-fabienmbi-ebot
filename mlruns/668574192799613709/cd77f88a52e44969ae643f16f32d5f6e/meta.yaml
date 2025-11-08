@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/cd77f88a52e44969ae643f16f32d5f6e/artifacts
+end_time: 1762592297353
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: cd77f88a52e44969ae643f16f32d5f6e
+run_name: fun-steed-650
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762592295804
+status: 3
+tags: []
+user_id: ebotfabien

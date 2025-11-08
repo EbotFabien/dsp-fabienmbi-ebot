@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/4f42980f7c0e40ba914da9fe227c4d88/artifacts
+end_time: 1762590882141
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: 4f42980f7c0e40ba914da9fe227c4d88
+run_name: gentle-shad-518
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762590880107
+status: 3
+tags: []
+user_id: ebotfabien

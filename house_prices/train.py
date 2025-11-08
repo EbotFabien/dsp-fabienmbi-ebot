@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import joblib
 import numpy as np
 from sklearn.metrics import mean_squared_log_error
@@ -10,93 +11,160 @@ from house_prices.preprocess import (
     scale_continuous_features,
     encode_nominal_features,
     encode_ordinal_features,
-    create_processed_dfs
+    create_processed_dfs,
 )
 
 
-def compute_rmsle(y_test: np.ndarray, y_pred: np.ndarray, precision: int = 2) -> float:
+def compute_rmsle(y_test: np.ndarray, y_pred: np.ndarray,
+                  precision: int = 2) -> float:
     """Compute Root Mean Squared Logarithmic Error."""
     rmsle = np.sqrt(mean_squared_log_error(y_test, y_pred))
     return round(rmsle, precision)
+
+
+# Get path to the project root (the folder that contains 'models/')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
+
 
 def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
     """
     Full data preprocessing + model training + evaluation pipeline.
 
     Parameters
-    ----------
+    -
     data : pd.DataFrame
         Original dataset containing both features and target.
 
     Returns
-    -------
+    -
     results : dict[str, float]
-        Dictionary with model performance metrics (e.g., {'rmsle': 0.18}).
+        Dictionary with model performance metrics
+        (e.g., {'rmsle': 0.18}).
     """
-    # --- Define feature sets
+    #  Define feature sets
     cont_features = ['GrLivArea', 'YearBuilt']
     cat_nom_features = ['Neighborhood']
     cat_ord_features = ['KitchenQual']
     ord_categories = [['Po', 'Fa', 'TA', 'Gd', 'Ex']]
 
-    mlflow.set_tracking_uri("file:./mlruns")  # stores logs in ./mlruns folder
-    experiment_name = "house_price_regression" if env == "production" else "house_price_regression_test"
-    mlflow.set_experiment(experiment_name)
-    with mlflow.start_run():
-        # --- Split data
+    if env == "production":
+        #  Set MLflow experiment
+        mlflow.set_tracking_uri("file:./mlruns")
+        experiment_name = (
+            "house_price_regression"
+            if env == "production"
+            else "house_price_regression_test"
+        )
+        mlflow.set_experiment(experiment_name)
+
+        with mlflow.start_run():
+            #  Split data
+            X_train, X_test, y_train, y_test = split_data(
+                data,
+                cont_features,
+                cat_nom_features,
+                cat_ord_features,
+                label_col='SalePrice',
+            )
+
+            #  Scale continuous features
+            X_train_cont, X_test_cont, _ = scale_continuous_features(
+                X_train, X_test, cont_features
+            )
+
+            #  Encode nominal features
+            X_train_ohe, X_test_ohe, _, ohe_cols = encode_nominal_features(
+                X_train, X_test, cat_nom_features
+            )
+
+            #  Encode ordinal features
+            X_train_ord, X_test_ord, _ = encode_ordinal_features(
+                X_train, X_test, cat_ord_features, ord_categories
+            )
+
+            #  Combine all processed features
+            X_train_final_df, X_test_final_df = create_processed_dfs(
+                X_train, X_test,
+                X_train_cont, X_test_cont, cont_features,
+                X_train_ohe, X_test_ohe, ohe_cols,
+                X_train_ord, X_test_ord, cat_ord_features,
+            )
+
+            #  Train Linear Regression model
+            X_train_final = X_train_final_df.values
+            X_test_final = X_test_final_df.values
+
+            linear_regression_model = LinearRegression()
+            linear_regression_model.fit(X_train_final, y_train)
+
+            #  Predict and evaluate
+            y_pred = linear_regression_model.predict(X_test_final)
+            rmsle = compute_rmsle(y_test.values, y_pred)
+
+            #  Log parameters, metrics, and model
+            model_path = os.path.join(MODELS_DIR, "linear_regression_model.joblib")
+
+            mlflow.log_param("model_type", "LinearRegression")
+            mlflow.log_param("features_continuous", cont_features)
+            mlflow.log_param("features_nominal", cat_nom_features)
+            mlflow.log_param("features_ordinal", cat_ord_features)
+            mlflow.log_metric("rmsle", rmsle)
+
+            joblib.dump(linear_regression_model, model_path, compress=3)
+            mlflow.sklearn.log_model(linear_regression_model, "model")
+            mlflow.log_artifact(model_path)
+
+            print("Model saved successfully!")
+            return {'rmsle': rmsle}
+    else:
+        #  Split data
         X_train, X_test, y_train, y_test = split_data(
             data,
             cont_features,
             cat_nom_features,
             cat_ord_features,
-            label_col='SalePrice'
+            label_col='SalePrice',
         )
 
-        # --- Scale continuous features
-        X_train_cont, X_test_cont, _ = scale_continuous_features(X_train, X_test, cont_features)
+        #  Scale continuous features
+        X_train_cont, X_test_cont, _ = scale_continuous_features(
+            X_train, X_test, cont_features, log_mlflow=False
+        )
 
-        # --- Encode nominal features
-        X_train_ohe, X_test_ohe, _, ohe_cols = encode_nominal_features(X_train, X_test, cat_nom_features)
+        #  Encode nominal features
+        X_train_ohe, X_test_ohe, _, ohe_cols = encode_nominal_features(
+            X_train, X_test, cat_nom_features, log_mlflow=False
+        )
 
-        # --- Encode ordinal features
-        X_train_ord, X_test_ord, _ = encode_ordinal_features(X_train, X_test, cat_ord_features, ord_categories)
+        #  Encode ordinal features
+        X_train_ord, X_test_ord, _ = encode_ordinal_features(
+            X_train, X_test, cat_ord_features, ord_categories, log_mlflow=False
+        )
 
-        # --- Combine all processed features into final DataFrames
+        #  Combine all processed features
         X_train_final_df, X_test_final_df = create_processed_dfs(
             X_train, X_test,
             X_train_cont, X_test_cont, cont_features,
             X_train_ohe, X_test_ohe, ohe_cols,
-            X_train_ord, X_test_ord, cat_ord_features
+            X_train_ord, X_test_ord, cat_ord_features,
         )
 
-        # --- Train Linear Regression model
+        #  Train Linear Regression model
         X_train_final = X_train_final_df.values
         X_test_final = X_test_final_df.values
 
         linear_regression_model = LinearRegression()
         linear_regression_model.fit(X_train_final, y_train)
 
-        # --- Predict and evaluate
+        #  Predict and evaluate
         y_pred = linear_regression_model.predict(X_test_final)
         rmsle = compute_rmsle(y_test.values, y_pred)
 
-        # log parameters and metrics
-        model_path = "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/models/linear_regression_model.joblib"
-        mlflow.log_param("model_type", "LinearRegression")
-        mlflow.log_param("features_continuous", cont_features)
-        mlflow.log_param("features_nominal", cat_nom_features)
-        mlflow.log_param("features_ordinal", cat_ord_features)
-        mlflow.log_metric("rmsle", rmsle)
-
+        #  Log parameters, metrics, and model
+        model_path = os.path.join(MODELS_DIR, "linear_regression_model.joblib")
         joblib.dump(linear_regression_model, model_path, compress=3)
 
-        mlflow.sklearn.log_model(linear_regression_model, "model")
-        mlflow.log_artifact(model_path)
-
         print("Model saved successfully!")
-
-        # --- Return results
-        
         return {'rmsle': rmsle}
-
-

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/a48c12eeaee946c395580bc42c1c5075/artifacts
+end_time: 1762591168380
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: a48c12eeaee946c395580bc42c1c5075
+run_name: skillful-ox-580
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762591168361
+status: 4
+tags: []
+user_id: ebotfabien

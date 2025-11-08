@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/b1784624c11a408e81f8377de1e9a255/artifacts
+end_time: 1762590274276
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: b1784624c11a408e81f8377de1e9a255
+run_name: monumental-elk-418
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762590272747
+status: 3
+tags: []
+user_id: ebotfabien

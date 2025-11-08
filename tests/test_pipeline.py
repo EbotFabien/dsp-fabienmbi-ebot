@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pandas as pd
 from house_prices.train import build_model
 from house_prices.inference import make_predictions
@@ -18,4 +22,4 @@ def test_end_to_end():
 
     # Predict
     predictions = make_predictions(data.drop(columns="SalePrice"), env="test")
-    assert len(predictions) == len(data)
+    assert len(predictions) == len(data) #ML flow broken,For tests only

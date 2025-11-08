@@ -1,0 +1,10 @@
+artifact_location: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/models/m-4fb9a9d90a0a412295cf6f92b324f6fc/artifacts
+creation_timestamp: 1762592295834
+experiment_id: '668574192799613709'
+last_updated_timestamp: 1762592297351
+model_id: m-4fb9a9d90a0a412295cf6f92b324f6fc
+model_type: null
+name: model
+source_run_id: cd77f88a52e44969ae643f16f32d5f6e
+status: 2
+status_message: null

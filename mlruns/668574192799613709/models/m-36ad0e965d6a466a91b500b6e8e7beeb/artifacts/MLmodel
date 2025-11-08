@@ -1,0 +1,22 @@
+artifact_path: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/models/m-36ad0e965d6a466a91b500b6e8e7beeb/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.2
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.6.1
+mlflow_version: 3.5.1
+model_id: m-36ad0e965d6a466a91b500b6e8e7beeb
+model_size_bytes: 460
+model_uuid: m-36ad0e965d6a466a91b500b6e8e7beeb
+prompts: null
+run_id: 4f42980f7c0e40ba914da9fe227c4d88
+utc_time_created: '2025-11-08 08:34:40.142363'

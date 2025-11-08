@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/e0a33efacd2e484eb7f822d9e3bccbe7/artifacts
+end_time: 1762592298662
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: e0a33efacd2e484eb7f822d9e3bccbe7
+run_name: aged-ray-347
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762592297443
+status: 3
+tags: []
+user_id: ebotfabien
