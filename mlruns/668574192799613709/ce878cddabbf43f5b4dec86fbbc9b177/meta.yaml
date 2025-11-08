@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/ce878cddabbf43f5b4dec86fbbc9b177/artifacts
+end_time: 1762590650665
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: ce878cddabbf43f5b4dec86fbbc9b177
+run_name: useful-rook-394
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762590649143
+status: 3
+tags: []
+user_id: ebotfabien

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/800cc67f321b453c8b75037c64a63809/artifacts
+end_time: 1762590883425
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: 800cc67f321b453c8b75037c64a63809
+run_name: tasteful-midge-263
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762590882213
+status: 3
+tags: []
+user_id: ebotfabien

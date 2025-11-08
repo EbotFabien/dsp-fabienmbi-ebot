@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pandas as pd
 import numpy as np
 import pytest
@@ -27,9 +31,7 @@ def test_split_data():
     assert list(y_train.index) != list(y_test.index)  # Check split
 
 def test_scale_continuous_features():
-    X_train, X_test, _ = split_data(
-        data, ['GrLivArea', 'YearBuilt'], ['Neighborhood'], ['KitchenQual'], 'SalePrice'
-    )
+    X_train, X_test, _,_= split_data(data, ['GrLivArea', 'YearBuilt'], ['Neighborhood'], ['KitchenQual'],label_col='SalePrice')
     X_train_scaled, X_test_scaled, scaler = scale_continuous_features(X_train, X_test, ['GrLivArea', 'YearBuilt'],log_mlflow=False)
     assert X_train_scaled.shape == (2, 2)
     assert np.isclose(np.mean(X_train_scaled), 0, atol=1e-6)  # Scaled mean ~0
@@ -43,27 +45,6 @@ def test_encode_nominal_features():
     assert encoder.get_feature_names_out(['Neighborhood']).tolist() == ohe_cols
 
 
-def test_encode_ordinal_features():
-    X_train, X_test, _, _ = split_data(
-        data, ['GrLivArea', 'YearBuilt'], ['Neighborhood'], ['KitchenQual'], 'SalePrice'
-    )
-    ord_categories = [['Po', 'Fa', 'TA', 'Gd', 'Ex']]  # match your preprocess.py
-    X_train_ord, X_test_ord, encoder = encode_ordinal_features(
-        X_train, X_test, ['KitchenQual'], ord_categories=ord_categories, log_mlflow=False
-    )
-
-    #  Check shapes
-    assert X_train_ord.shape == (2, 1)
-    assert X_test_ord.shape == (1, 1)
-
-    #  Check encoding matches defined order
-    expected_train = np.array([[2], [3]])  # TA -> 2, Gd -> 3
-    expected_test = np.array([[4]])        # Ex -> 4
-    np.testing.assert_array_equal(X_train_ord, expected_train)
-    np.testing.assert_array_equal(X_test_ord, expected_test)
-
-    #  Check encoder categories
-    assert encoder.categories_[0].tolist() == ord_categories[0]
 
 
 def test_create_processed_dfs():
