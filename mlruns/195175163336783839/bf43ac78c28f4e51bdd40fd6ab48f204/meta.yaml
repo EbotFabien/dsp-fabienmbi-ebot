@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/195175163336783839/bf43ac78c28f4e51bdd40fd6ab48f204/artifacts
+end_time: 1762580266103
+entry_point_name: ''
+experiment_id: '195175163336783839'
+lifecycle_stage: active
+run_id: bf43ac78c28f4e51bdd40fd6ab48f204
+run_name: traveling-rat-545
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762580264278
+status: 3
+tags: []
+user_id: ebotfabien
