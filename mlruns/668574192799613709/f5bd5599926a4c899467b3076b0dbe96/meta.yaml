@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/f5bd5599926a4c899467b3076b0dbe96/artifacts
+end_time: 1762591585970
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: f5bd5599926a4c899467b3076b0dbe96
+run_name: dazzling-hog-47
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762591585963
+status: 4
+tags: []
+user_id: ebotfabien

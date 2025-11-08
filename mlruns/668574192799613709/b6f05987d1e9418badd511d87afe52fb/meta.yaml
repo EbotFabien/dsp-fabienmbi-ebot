@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/668574192799613709/b6f05987d1e9418badd511d87afe52fb/artifacts
+end_time: 1762591574925
+entry_point_name: ''
+experiment_id: '668574192799613709'
+lifecycle_stage: active
+run_id: b6f05987d1e9418badd511d87afe52fb
+run_name: bald-hound-237
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762591574915
+status: 4
+tags: []
+user_id: ebotfabien

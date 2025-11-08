@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import joblib
 import numpy as np
 from sklearn.metrics import mean_squared_log_error
@@ -19,6 +20,11 @@ def compute_rmsle(y_test: np.ndarray, y_pred: np.ndarray,
     """Compute Root Mean Squared Logarithmic Error."""
     rmsle = np.sqrt(mean_squared_log_error(y_test, y_pred))
     return round(rmsle, precision)
+
+
+# Get path to the project root (the folder that contains 'models/')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 
 def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
@@ -96,10 +102,8 @@ def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
         rmsle = compute_rmsle(y_test.values, y_pred)
 
         #  Log parameters, metrics, and model
-        model_path = (
-            "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/"
-            "dsp-fabienmbi-ebot/models/linear_regression_model.joblib"
-        )
+        model_path = os.path.join(MODELS_DIR, "linear_regression_model.joblib")
+
         mlflow.log_param("model_type", "LinearRegression")
         mlflow.log_param("features_continuous", cont_features)
         mlflow.log_param("features_nominal", cat_nom_features)

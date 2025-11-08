@@ -3,6 +3,11 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
 import mlflow
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 
 def split_data(df, cont_features, cat_nom_features, cat_ord_features,
@@ -71,10 +76,7 @@ def scale_continuous_features(X_train, X_test, cont_features, log_mlflow=True):
     X_test_scaled = scaler.transform(X_test[cont_features])
 
     if log_mlflow:
-        path = (
-            "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/"
-            "dsp-fabienmbi-ebot/models/standard_scaler.joblib"
-        )
+        path = os.path.join(MODELS_DIR, "standard_scaler.joblib")
         joblib.dump(scaler, path, compress=3)
         mlflow.log_artifact(path)
 
@@ -114,10 +116,7 @@ def encode_nominal_features(X_train, X_test, cat_nom_features, log_mlflow=True):
     ohe_cols = list(encoder.get_feature_names_out(cat_nom_features))
 
     if log_mlflow:
-        path = (
-            "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/"
-            "dsp-fabienmbi-ebot/models/one_hot_encoder.joblib"
-        )
+        path = os.path.join(MODELS_DIR, "one_hot_encoder.joblib")
         joblib.dump(encoder, path, compress=3)
         mlflow.log_artifact(path)
 
@@ -161,10 +160,7 @@ def encode_ordinal_features(X_train, X_test, cat_ord_features,
     X_test_encoded = encoder.transform(X_test[cat_ord_features])
 
     if log_mlflow:
-        path = (
-            "/Users/ebotfabien/Desktop/school/hosuing_pipelinw/"
-            "dsp-fabienmbi-ebot/models/ordinal_encoder.joblib"
-        )
+        path = os.path.join(MODELS_DIR, "ordinal_encoder.joblib")
         joblib.dump(encoder, path, compress=3)
         mlflow.log_artifact(path)
 
