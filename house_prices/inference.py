@@ -15,7 +15,6 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 
-
 def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) -> pd.Series:
     """
     Preprocesses inference data using MLflow-trained transformers and predicts house prices.
@@ -73,7 +72,7 @@ def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) 
         scaler = load_transformer(run_id, "standard_scaler.joblib")
         ohe = load_transformer(run_id, "one_hot_encoder.joblib")
         ordinal = load_transformer(run_id, "ordinal_encoder.joblib")
-    
+
         X_cont = scaler.transform(inference_df[cont_features])
         X_ohe = ohe.transform(inference_df[cat_nom_features])
         ohe_cols = list(ohe.get_feature_names_out(cat_nom_features))
