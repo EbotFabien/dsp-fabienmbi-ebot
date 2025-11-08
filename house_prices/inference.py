@@ -15,6 +15,7 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 
+
 def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) -> pd.Series:
     """
     Preprocesses inference data using MLflow-trained transformers and predicts house prices.
@@ -72,34 +73,29 @@ def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) 
         scaler = load_transformer(run_id, "standard_scaler.joblib")
         ohe = load_transformer(run_id, "one_hot_encoder.joblib")
         ordinal = load_transformer(run_id, "ordinal_encoder.joblib")
+    
+        X_cont = scaler.transform(inference_df[cont_features])
+        X_ohe = ohe.transform(inference_df[cat_nom_features])
+        ohe_cols = list(ohe.get_feature_names_out(cat_nom_features))
+        X_ord = ordinal.transform(inference_df[cat_ord_features])
+
+        # Combine features
+        X_final, _ = create_processed_dfs(
+            X_train=inference_df,
+            X_test=inference_df,  # ignored, only for signature
+            X_train_cont=X_cont,
+            X_test_cont=X_cont,
+            cont_features=cont_features,
+            X_train_ohe=X_ohe,
+            X_test_ohe=X_ohe,
+            ohe_cols=ohe_cols,
+            X_train_ord=X_ord,
+            X_test_ord=X_ord,
+            cat_ord_features=cat_ord_features
+        )
+
+        # Predict
+        predictions = model.predict(X_final.values)
+        return predictions
     else:
-        # Load transformers and model
-        scaler = joblib.load(os.path.join(MODELS_DIR, "standard_scaler.joblib"))
-        ohe = joblib.load(os.path.join(MODELS_DIR, "one_hot_encoder.joblib"))
-        ordinal = joblib.load(os.path.join(MODELS_DIR, "ordinal_encoder.joblib"))
-        model = joblib.load(os.path.join(MODELS_DIR, "linear_regression_model.joblib"))
-
-    # Preprocess input
-    X_cont = scaler.transform(inference_df[cont_features])
-    X_ohe = ohe.transform(inference_df[cat_nom_features])
-    ohe_cols = list(ohe.get_feature_names_out(cat_nom_features))
-    X_ord = ordinal.transform(inference_df[cat_ord_features])
-
-    # Combine features
-    X_final, _ = create_processed_dfs(
-        X_train=inference_df,
-        X_test=inference_df,  # ignored, only for signature
-        X_train_cont=X_cont,
-        X_test_cont=X_cont,
-        cont_features=cont_features,
-        X_train_ohe=X_ohe,
-        X_test_ohe=X_ohe,
-        ohe_cols=ohe_cols,
-        X_train_ord=X_ord,
-        X_test_ord=X_ord,
-        cat_ord_features=cat_ord_features
-    )
-
-    # Predict
-    predictions = model.predict(X_final.values)
-    return predictions
+        pass
