@@ -3,12 +3,16 @@ import joblib
 from house_prices.preprocess import create_processed_dfs
 import mlflow
 import mlflow.sklearn
+import os
 
 
 # Hard-coded feature lists (must match training)
 cont_features = ['GrLivArea', 'YearBuilt']
 cat_nom_features = ['Neighborhood']
 cat_ord_features = ['KitchenQual']
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) -> pd.Series:
@@ -29,44 +33,51 @@ def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) 
     predictions : np.ndarray
         Predicted house prices.
     """
-    # Set MLflow experiment
-    mlflow.set_tracking_uri("file:./mlruns")
-    experiment_name = (
-        "house_price_regression"
-        if env == "production"
-        else "house_price_regression_test"
-    )
-    experiment = mlflow.get_experiment_by_name(experiment_name)
-
-    # Determine which run to use
-    if run_id is None:
-        runs_df = mlflow.search_runs(
-            experiment_ids=[experiment.experiment_id],
-            order_by=["metrics.rmsle ASC"]
+    if env == 'production':
+        # Set MLflow experiment
+        mlflow.set_tracking_uri("file:./mlruns")
+        experiment_name = (
+            "house_price_regression"
+            if env == "production"
+            else "house_price_regression_test"
         )
-        if runs_df.empty:
-            raise ValueError(
-                f"No runs found in MLflow experiment '{experiment_name}'"
+        experiment = mlflow.get_experiment_by_name(experiment_name)
+
+        # Determine which run to use
+        if run_id is None:
+            runs_df = mlflow.search_runs(
+                experiment_ids=[experiment.experiment_id],
+                order_by=["metrics.rmsle ASC"]
             )
-        run_id = runs_df.iloc[0].run_id
+            if runs_df.empty:
+                raise ValueError(
+                    f"No runs found in MLflow experiment '{experiment_name}'"
+                )
+            run_id = runs_df.iloc[0].run_id
 
-    print(f"Using MLflow run: {run_id} from experiment '{experiment_name}'")
+        print(f"Using MLflow run: {run_id} from experiment '{experiment_name}'")
 
-    # Load model
-    model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
+        # Load model
+        model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
 
-    # Helper to load transformers from artifacts
-    def load_transformer(run_id: str, artifact_name: str):
-        local_path = mlflow.artifacts.download_artifacts(
-            run_id=run_id,
-            artifact_path=artifact_name
-        )
-        return joblib.load(local_path)
+        # Helper to load transformers from artifacts
+        def load_transformer(run_id: str, artifact_name: str):
+            local_path = mlflow.artifacts.download_artifacts(
+                run_id=run_id,
+                artifact_path=artifact_name
+            )
+            return joblib.load(local_path)
 
-    # Load transformers
-    scaler = load_transformer(run_id, "standard_scaler.joblib")
-    ohe = load_transformer(run_id, "one_hot_encoder.joblib")
-    ordinal = load_transformer(run_id, "ordinal_encoder.joblib")
+        # Load transformers
+        scaler = load_transformer(run_id, "standard_scaler.joblib")
+        ohe = load_transformer(run_id, "one_hot_encoder.joblib")
+        ordinal = load_transformer(run_id, "ordinal_encoder.joblib")
+    else:
+        # Load transformers and model
+        scaler = joblib.load(os.path.join(MODELS_DIR, "standard_scaler.joblib"))
+        ohe = joblib.load(os.path.join(MODELS_DIR, "one_hot_encoder.joblib"))
+        ordinal = joblib.load(os.path.join(MODELS_DIR, "ordinal_encoder.joblib"))
+        model = joblib.load(os.path.join(MODELS_DIR, "linear_regression_model.joblib"))
 
     # Preprocess input
     X_cont = scaler.transform(inference_df[cont_features])

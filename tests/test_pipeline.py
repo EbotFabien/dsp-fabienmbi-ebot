@@ -21,5 +21,5 @@ def test_end_to_end():
     assert 'rmsle' in results
 
     # Predict
-    predictions = make_predictions(data.drop(columns="SalePrice"))
+    predictions = make_predictions(data.drop(columns="SalePrice"), env="test")
     assert len(predictions) == len(data)
