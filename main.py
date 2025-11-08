@@ -23,8 +23,16 @@ def predict_model(args):
     predict_df = pd.read_csv(args.input)
 
     try:
-        args.output=inference_module.make_predictions(inference_df=predict_df)
-        print(f"Predictions {args.output}")
+        predictions=inference_module.make_predictions(inference_df=predict_df)
+
+        # Convert predictions to DataFrame
+        pred_df = pd.DataFrame({
+            "Prediction": predictions
+        })
+
+        # Save to CSV
+        pred_df.to_csv(args.output, index=False)
+        print(f"Predictions {predictions}")
     except Exception as e:
         print(f"Prediction failed: {e}")
         sys.exit(1)
@@ -45,7 +53,7 @@ def main():
     #predict
     predict_parser = subparsers.add_parser("predict", help="Run model inference")
     predict_parser.add_argument("--input", required=True, help="Path to input CSV file")
-    #predict_parser.add_argument("--output", required=True, help="predictions")
+    predict_parser.add_argument("--output", required=True, help="predictions")
     predict_parser.set_defaults(func=predict_model)
 
     # Parse and Execute

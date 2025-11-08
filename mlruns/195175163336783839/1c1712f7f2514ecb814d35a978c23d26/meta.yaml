@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ebotfabien/Desktop/school/hosuing_pipelinw/dsp-fabienmbi-ebot/mlruns/195175163336783839/1c1712f7f2514ecb814d35a978c23d26/artifacts
+end_time: 1762582526696
+entry_point_name: ''
+experiment_id: '195175163336783839'
+lifecycle_stage: active
+run_id: 1c1712f7f2514ecb814d35a978c23d26
+run_name: receptive-goose-921
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762582524810
+status: 3
+tags: []
+user_id: ebotfabien

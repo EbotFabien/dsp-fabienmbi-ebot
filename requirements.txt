@@ -4,3 +4,4 @@ scikit-learn>=1.2
 jupyter==1.0.0
 joblib==1.4.2
 mlflow==3.5.1
+pytest==8.4.2
