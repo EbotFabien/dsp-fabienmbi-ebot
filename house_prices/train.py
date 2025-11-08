@@ -25,6 +25,7 @@ def compute_rmsle(y_test: np.ndarray, y_pred: np.ndarray,
 # Get path to the project root (the folder that contains 'models/')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
 
 
 def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
@@ -48,16 +49,76 @@ def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
     cat_ord_features = ['KitchenQual']
     ord_categories = [['Po', 'Fa', 'TA', 'Gd', 'Ex']]
 
-    #  Set MLflow experiment
-    mlflow.set_tracking_uri("file:./mlruns")
-    experiment_name = (
-        "house_price_regression"
-        if env == "production"
-        else "house_price_regression_test"
-    )
-    mlflow.set_experiment(experiment_name)
+    if env == "production":
+        #  Set MLflow experiment
+        mlflow.set_tracking_uri("file:./mlruns")
+        experiment_name = (
+            "house_price_regression"
+            if env == "production"
+            else "house_price_regression_test"
+        )
+        mlflow.set_experiment(experiment_name)
 
-    with mlflow.start_run():
+        with mlflow.start_run():
+            #  Split data
+            X_train, X_test, y_train, y_test = split_data(
+                data,
+                cont_features,
+                cat_nom_features,
+                cat_ord_features,
+                label_col='SalePrice',
+            )
+
+            #  Scale continuous features
+            X_train_cont, X_test_cont, _ = scale_continuous_features(
+                X_train, X_test, cont_features
+            )
+
+            #  Encode nominal features
+            X_train_ohe, X_test_ohe, _, ohe_cols = encode_nominal_features(
+                X_train, X_test, cat_nom_features
+            )
+
+            #  Encode ordinal features
+            X_train_ord, X_test_ord, _ = encode_ordinal_features(
+                X_train, X_test, cat_ord_features, ord_categories
+            )
+
+            #  Combine all processed features
+            X_train_final_df, X_test_final_df = create_processed_dfs(
+                X_train, X_test,
+                X_train_cont, X_test_cont, cont_features,
+                X_train_ohe, X_test_ohe, ohe_cols,
+                X_train_ord, X_test_ord, cat_ord_features,
+            )
+
+            #  Train Linear Regression model
+            X_train_final = X_train_final_df.values
+            X_test_final = X_test_final_df.values
+
+            linear_regression_model = LinearRegression()
+            linear_regression_model.fit(X_train_final, y_train)
+
+            #  Predict and evaluate
+            y_pred = linear_regression_model.predict(X_test_final)
+            rmsle = compute_rmsle(y_test.values, y_pred)
+
+            #  Log parameters, metrics, and model
+            model_path = os.path.join(MODELS_DIR, "linear_regression_model.joblib")
+
+            mlflow.log_param("model_type", "LinearRegression")
+            mlflow.log_param("features_continuous", cont_features)
+            mlflow.log_param("features_nominal", cat_nom_features)
+            mlflow.log_param("features_ordinal", cat_ord_features)
+            mlflow.log_metric("rmsle", rmsle)
+
+            joblib.dump(linear_regression_model, model_path, compress=3)
+            mlflow.sklearn.log_model(linear_regression_model, "model")
+            mlflow.log_artifact(model_path)
+
+            print("Model saved successfully!")
+            return {'rmsle': rmsle}
+    else:
         #  Split data
         X_train, X_test, y_train, y_test = split_data(
             data,
@@ -69,17 +130,17 @@ def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
 
         #  Scale continuous features
         X_train_cont, X_test_cont, _ = scale_continuous_features(
-            X_train, X_test, cont_features
+            X_train, X_test, cont_features, log_mlflow=False
         )
 
         #  Encode nominal features
         X_train_ohe, X_test_ohe, _, ohe_cols = encode_nominal_features(
-            X_train, X_test, cat_nom_features
+            X_train, X_test, cat_nom_features, log_mlflow=False
         )
 
         #  Encode ordinal features
         X_train_ord, X_test_ord, _ = encode_ordinal_features(
-            X_train, X_test, cat_ord_features, ord_categories
+            X_train, X_test, cat_ord_features, ord_categories, log_mlflow=False
         )
 
         #  Combine all processed features
@@ -103,16 +164,7 @@ def build_model(data: pd.DataFrame, env="production") -> dict[str, float]:
 
         #  Log parameters, metrics, and model
         model_path = os.path.join(MODELS_DIR, "linear_regression_model.joblib")
-
-        mlflow.log_param("model_type", "LinearRegression")
-        mlflow.log_param("features_continuous", cont_features)
-        mlflow.log_param("features_nominal", cat_nom_features)
-        mlflow.log_param("features_ordinal", cat_ord_features)
-        mlflow.log_metric("rmsle", rmsle)
-
         joblib.dump(linear_regression_model, model_path, compress=3)
-        mlflow.sklearn.log_model(linear_regression_model, "model")
-        mlflow.log_artifact(model_path)
 
         print("Model saved successfully!")
         return {'rmsle': rmsle}

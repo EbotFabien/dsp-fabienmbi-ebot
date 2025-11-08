@@ -3,14 +3,12 @@ import joblib
 from house_prices.preprocess import create_processed_dfs
 import mlflow
 import mlflow.sklearn
-import os
+
 
 # Hard-coded feature lists (must match training)
 cont_features = ['GrLivArea', 'YearBuilt']
 cat_nom_features = ['Neighborhood']
 cat_ord_features = ['KitchenQual']
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 
 def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) -> pd.Series:
