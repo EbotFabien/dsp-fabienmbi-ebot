@@ -22,4 +22,4 @@ def test_end_to_end():
 
     # Predict
     predictions = make_predictions(data.drop(columns="SalePrice"), env="test")
-    assert len(predictions) == 1459 #len(data) for tests only
+    assert len(predictions) == len(data)
