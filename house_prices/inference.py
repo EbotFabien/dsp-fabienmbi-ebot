@@ -97,5 +97,5 @@ def make_predictions(inference_df: pd.DataFrame, env="production", run_id=None) 
         predictions = model.predict(X_final.values)
         return predictions
     else:
-        my_list = list(range(1459))  #for tests only #The ML flow and redirect bad
+        my_list = list(range(1459))  # for tests only ,The ML flow and redirect bad
         return my_list
